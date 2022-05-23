@@ -7,12 +7,20 @@ import time
 import road_module as road
 import eye_tracking_module as tracking
 import belt_module as belt
+from tkinter import *
+from tkinter import messagebox
+
+window = Tk()
+window.title("Alarm")
+window.geometry("300x40")
+def Click():
+    messagebox.showinfo("알림","뒷자석 안전벨트 해제")
 
 
-cap_road = cv2.VideoCapture('road4.mp4')
-cap_belt = cv2.VideoCapture('car3_2.mp4')
-#cap_face = cv2.VideoCapture('face.mp4')
-cap_face = cv2.VideoCapture(0)
+cap_road = cv2.VideoCapture('video/road4.mp4')
+cap_belt = cv2.VideoCapture('video/car3_2.mp4')
+cap_face = cv2.VideoCapture('1.mp4')
+#cap_face = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
@@ -89,10 +97,10 @@ while True:
                 print("warning!!!")
                 al_cnt1 += 1
                 if al_cnt1 <= 3 :
-                    playsound.playsound('al2.MP3')
+                    playsound.playsound('audio/al2.MP3')
                     print(al_cnt1)
                 else:
-                    playsound.playsound('al.mp3')
+                    playsound.playsound('audio/al.mp3')
 				
     else:
         cnt = 0
@@ -113,17 +121,21 @@ while True:
         if circles.shape[1] == 1:
             if flag:
                 begin = time.time()
-                limit = begin + 6
+                limit = begin + 10
                 flag = False
         else:
             begin = time.time()
-            limit = begin + 6
+            limit = begin + 10
 
     if time.time() > limit:
         print('yoooooooooooo')
-        cv2.imshow('origin_belt', origin_belt)
-        cv2.waitKey(3000)
-        cv2.destroyWindow('origin_belt')
+        #cv2.imshow('origin_belt', origin_belt)
+        #cv2.waitKey(3000)
+        #cv2.destroyWindow('origin_belt')
+        
+        bnt = Button(text="경고",command=Click)
+        bnt.pack()
+        window.mainloop()
         flag = True
 
     if circles is not None:
