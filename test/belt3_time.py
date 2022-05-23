@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import time
 
-cap_belt = cv2.VideoCapture('car3_2.mp4')
+cap_belt = cv2.VideoCapture('belt_final.mp4')
 detection = False
 flag = True
 limit = 4 # 4초
@@ -20,7 +20,7 @@ while True:
                 | (frame[:,:,1] < bgr_threshold[1]) \
                 | (frame[:,:,2] < bgr_threshold[2])
     frame2[thresholds] = [0,0,0]
-
+    cv2.imshow('frame2', frame2)
     frame2 = frame2[270:410,340:515]
     frame = frame[270:410,340:515]
     gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)

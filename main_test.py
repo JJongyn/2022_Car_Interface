@@ -17,9 +17,9 @@ def Click():
     messagebox.showinfo("알림","뒷자석 안전벨트 해제")
 
 
-cap_road = cv2.VideoCapture('video/road4.mp4')
-cap_belt = cv2.VideoCapture('video/car3_2.mp4')
-cap_face = cv2.VideoCapture('1.mp4')
+cap_road = cv2.VideoCapture('video/road_final.mp4')
+cap_belt = cv2.VideoCapture('video/belt_final.mp4')
+cap_face = cv2.VideoCapture('video/face_final.mp4')
 #cap_face = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
@@ -57,11 +57,32 @@ while True:
 
     ### line ###
     road_canny = road.preprocessing(frame2)
+    # cv2.imshow("canny", road_canny)
     roi_left, roi_right = road.roi(road_canny)
-    
     left_lines = cv2.HoughLinesP(roi_left, 1, np.pi/180, 50, maxLineGap=50)
     right_lines = cv2.HoughLinesP(roi_right, 1, np.pi/180, 50, maxLineGap=50)
+    ####################
+    if left_lines is not None:
+        for line in left_lines:
+            x1, y1, x2, y2 = line[0]
+            p = np.polyfit((x1, x2), (y1, y2), 1)
+            slope = p[0]
+            inter = p[1]
+            if slope < -0.7 and slope > -1.2: 
+                cv2.line(lineframe, (x1,y1),(x2,y2),(51,104,255),3)
+                #cv2.imshow("lineframe", lineframe)
 
+    if right_lines is not None:
+        for line2 in right_lines:
+            x1, y1, x2, y2 = line2[0]
+            p = np.polyfit((x1, x2), (y1, y2), 1)
+            slope = p[0]
+            inter = p[1]
+            if slope > 0.7 and slope < 1.1: 
+                cv2.line(lineframe, (x1,y1),(x2,y2),(51,104,255),3)
+                #cv2.imshow("lineframe", lineframe)
+
+    ########################
     if left_lines is not None:
         if right_lines is not None:
             for left, right in zip(left_lines, right_lines):
@@ -87,7 +108,7 @@ while True:
     rightEyeHull = cv2.convexHull(right_eye)
     cv2.drawContours(frame_face, [leftEyeHull], -1, (0, 255, 0), 1)
     cv2.drawContours(frame_face, [rightEyeHull], -1, (0, 255, 0), 1)
-
+    
     # 특정 cnt이상이면 
     if ratio < EYE_THRESH:
         cnt += 1
@@ -110,6 +131,7 @@ while True:
     origin_belt = frame_belt.copy()
     _, frame_belt2= belt.gray_img(frame_belt)
     frame_belt2 = belt.white_extract(frame_belt2)
+    # cv2.imshow("belt", frame_belt2)
 
     frame_belt2 = belt.roi_belt(frame_belt2)
     frame_belt = belt.roi_belt(frame_belt)
@@ -141,6 +163,7 @@ while True:
     if circles is not None:
         for i in circles[0]:
             cv2.circle(frame_belt, (int(i[0]), int(i[1])), int(i[2]), (255, 255, 255), 2)
+            #cv2.imshow("belt", frame_belt2)
 
 
     black = np.zeros_like(frame2)

@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import time
 
-cap_belt = cv2.VideoCapture('car3.mp4')
+cap_belt = cv2.VideoCapture('belt_final.mp4')
 
 while True:
     ret, frame = cap_belt.read()
